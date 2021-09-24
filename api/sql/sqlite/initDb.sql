@@ -38,3 +38,5 @@ CREATE TABLE IF NOT EXISTS team_invitations (
 SELECT * from player_team_realation;
 
 SELECT * from player_team_realation WHERE playerId = 'u2l4UStXbZh4nfjRpcG27' AND teamId = '25O2txdHyWFRQqPbkXJSU';
+
+DELETE FROM team_invitations WHERE TRUE;

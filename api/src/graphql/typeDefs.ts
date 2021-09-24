@@ -74,6 +74,10 @@ export const typeDefs = gql`
     invitationid: String
   }
 
+  input DeleteTeamInvitationPayload {
+    invitationid: String
+  }
+
   input EditPlayerPayload {
     playerId: String
     role: String
@@ -84,9 +88,13 @@ export const typeDefs = gql`
     teamId: String
   }
 
+  input PlayerFilter {
+    freePlayer: Boolean!
+  }
+
   type Query {
     player(id: String): User
-    players: [User]!
+    players(filter: PlayerFilter): [User]!
     team(id: String): Team
     teams: [Team]!
     invitation(id: String): TeamInvitation
@@ -98,6 +106,7 @@ export const typeDefs = gql`
     createTeam(data: CreateTeamPayload): Team!
     createTeamInvitation(data: CreateTeamInvitationPayload): Boolean!
     acceptTeamInvitation(data: AcceptTeamInvitationPayload): Team!
+    deleteTeamInvitation(data: DeleteTeamInvitationPayload): Boolean!
     editPlayer(data: EditPlayerPayload): Player!
     removePlayer(data: DeletePlayerPayload): Player!
   }

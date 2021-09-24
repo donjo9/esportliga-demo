@@ -1,53 +1,49 @@
 import Head from "next/head";
 import styled from "styled-components";
+import useSWR from "swr";
 import tw from "twin.macro";
+import { request, gql } from "graphql-request";
+import Team from "../componets/Team";
+
+const getTeams = gql`
+  query {
+    teams {
+      id
+      name
+      players {
+        id
+        username
+        role
+      }
+    }
+  }
+`;
 
 const Container = styled.div`
-  ${tw`bg-blue-100`}
-  height: 100%;
-  width: 100%;
-  overflow: auto;
+  ${tw`min-w-full min-h-full bg-gray-800 text-gray-100 m-0`}
 `;
 
-const Content = styled.main`
-  ${tw`m-2 p-8`}
-`;
+const Home: React.FC = () => {
+  const { data: teamData } = useSWR<any>(
+    getTeams,
+    async (q) => await request(process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT, q)
+  );
 
-const Header = styled.h1`
-  ${tw`font-bold text-6xl`}
-`;
+  if (!teamData) {
+    return <div>"Loading..."</div>;
+  }
+  console.log(teamData);
 
-const StyledLink = styled.a`
-  ${tw`text-xl`}
-`;
-
-export default function Home() {
   return (
     <Container>
       <Head>
-        <title>Next JS with Tailwind and Styled-Components</title>
+        <title>Esportliga mini site</title>
       </Head>
-
-      <Content>
-        <Header>
-          This is a basic Next JS site with Styled-Component and Tailwind CSS
-        </Header>
-        <ul>
-          <li>
-            <StyledLink href="https://styled-components.com/">
-              Styled-Components
-            </StyledLink>
-          </li>
-          <li>
-            <StyledLink href="https://tailwindcss.com/">TailwindCSS</StyledLink>
-          </li>
-          <li>
-            <StyledLink href="https://github.com/ben-rogerson/twin.macro">
-              Twin.Macro
-            </StyledLink>
-          </li>
-        </ul>
-      </Content>
+      {teamData.teams.map((t) => (
+        <Team key={t.id} name={t.name} players={t.players} />
+      ))}
     </Container>
   );
-}
+};
+
+export default Home;

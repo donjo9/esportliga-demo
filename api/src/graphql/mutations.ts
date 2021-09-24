@@ -83,6 +83,18 @@ export const Mutation = {
       throw new Error("No invitation with that id");
     }
   },
+  deleteTeamInvitation: async (parent, { data }, { db }) => {
+    const { invitationid } = data;
+    const iSql = "SELECT playerId, teamId from team_invitations WHERE id = (?)";
+    const invite = await db.get(iSql, [invitationid]);
+    if (invite) {
+      const dSql = "DELETE FROM team_invitations WHERE id = (?)";
+      await db.run(dSql, invitationid);
+      return true;
+    } else {
+      throw new Error("No invitation with that id");
+    }
+  },
   editPlayer: async (parent, { data }, { db }) => {
     const { role, playerId } = data;
     if (playerRoles.some((r) => r === role)) {

@@ -19,6 +19,15 @@ const teamInvitations = async (
   return invitations;
 };
 
+const playerInvitations = async (
+  parent,
+  data,
+  { teamPlayerInvitationsLoader }
+) => {
+  const invitations = await teamPlayerInvitationsLoader.load(parent.id);
+  return invitations;
+};
+
 const invitationTeam = async (parent, data, { invitationTeamLoader }) => {
   const invitations = await invitationTeamLoader.load(parent.id);
   return invitations;
@@ -40,6 +49,7 @@ export const Player = {
 
 export const Team = {
   players,
+  playerInvitations,
 };
 
 export const TeamInvitation = {
@@ -54,8 +64,17 @@ export const Query = {
 
     return user;
   },
-  players: async (parent, args, { db }, info) => {
-    const sql = "SELECT id, username FROM users";
+  players: async (parent, { filter }, { db }, info) => {
+    let sql = "SELECT users.id, users.username FROM users ";
+    if (filter?.freePlayer === true) {
+      sql += `LEFT JOIN player_team_realation ptr
+              ON users.id =  ptr.playerId
+              WHERE ptr.playerId IS NULL`;
+    } else if (filter?.freePlayer === false) {
+      sql += `JOIN player_team_realation ptr
+              ON users.id =  ptr.playerId`;
+    }
+
     const users = await db.all(sql);
     return users || [];
   },

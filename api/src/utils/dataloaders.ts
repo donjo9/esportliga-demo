@@ -116,6 +116,36 @@ export const getBatchPlayerTeamInvitation = async (
   return invitationsArray;
 };
 
+export const getBatchTeamPlayerInvitation = async (
+  teamIds: readonly string[]
+): Promise<Array<TInvitation>> => {
+  const db = await database();
+  const placeholder = teamIds.map(() => "?").join(",");
+  const sql = `SELECT ti.id as tiid, teams.id as tid FROM team_invitations ti
+  JOIN teams
+  ON teams.id = ti.teamId
+  WHERE teams.id IN (${placeholder})`;
+  const rows = await db.all(sql, teamIds);
+  let mappedInput = {};
+  if (rows) {
+    rows.forEach((r) => {
+      if (mappedInput[r.tid] !== undefined) {
+        mappedInput[r.tid].push({
+          id: r.tiid,
+        });
+      } else {
+        mappedInput[r.tid] = [];
+        mappedInput[r.tid].push({
+          id: r.tiid,
+        });
+      }
+    });
+  }
+
+  const invitationsArray = teamIds.map((key) => mappedInput[key] || []);
+  return invitationsArray;
+};
+
 export const getBatchInvitationTeams = async (
   invitationIds: readonly string[]
 ): Promise<Array<TTeam>> => {
