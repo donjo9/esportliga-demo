@@ -1,8 +1,14 @@
 import request, { gql } from "graphql-request";
 import toast from "react-hot-toast";
+import styled from "styled-components";
 import useSWR, { useSWRConfig } from "swr";
+import tw from "twin.macro";
 import { useAuth } from "../utils/useAuth";
 import useTeam from "../utils/useTeam";
+
+const LeaveButton = styled.button`
+  ${tw`mx-2 px-2 border-2 rounded-xl border-gray-700 bg-green-800 hover:bg-green-600`}
+`;
 
 type TTeam = {
   id: string;
@@ -66,6 +72,12 @@ const acceptInvitaionQuery = gql`
     }
   }
 `;
+
+const leaveTeamQuery = gql`
+  mutation leaveTeam($playerid: String, $teamid: String) {
+    removePlayer(data: { playerId: $playerid, teamId: $teamid })
+  }
+`;
 const deleteInvitaionQuery = gql`
   mutation deleteInvitation($invitationid: String) {
     deleteTeamInvitation(data: { invitationid: $invitationid })
@@ -105,11 +117,33 @@ const ProfilePage: React.FC = () => {
     mutate([userQuery, user.id]);
     teamMutate(null, true);
   };
+
+  const leaveTeam = async (playerid: string, teamid: string) => {
+    const invitationRespons = await request(
+      process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT,
+      leaveTeamQuery,
+      { playerid, teamid }
+    );
+    toast.success("Invitation acceptet");
+
+    mutate([userQuery, user.id]);
+    teamMutate(null, true);
+  };
   console.log(data);
 
   return (
     <div>
-      {data.player.username} {data.player.team?.name}
+      {data.player.username}
+      <div>
+        {data.player.team?.name}
+        {data.player.team ? (
+          <LeaveButton
+            onClick={() => leaveTeam(data.player.id, data.player.team.id)}
+          >
+            Leave team
+          </LeaveButton>
+        ) : null}
+      </div>
       <div>
         <h1>Team Invitations</h1>
         {data.player.teamInvitations.map((invitation) => (
