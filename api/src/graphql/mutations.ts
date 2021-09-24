@@ -117,8 +117,6 @@ export const Mutation = {
 
     const dSql = `DELETE FROM player_team_realation WHERE playerId=(?) AND teamId=(?);`;
     const d = await db.run(dSql, [playerId, teamId]);
-    const sSql = `SELECT id, username FROM users WHERE id=(?);`;
-    const player = await db.get(sSql, [playerId]);
-    return player;
+    return !!d;
   },
 };

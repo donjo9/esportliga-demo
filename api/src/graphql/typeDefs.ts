@@ -108,6 +108,6 @@ export const typeDefs = gql`
     acceptTeamInvitation(data: AcceptTeamInvitationPayload): Team!
     deleteTeamInvitation(data: DeleteTeamInvitationPayload): Boolean!
     editPlayer(data: EditPlayerPayload): Player!
-    removePlayer(data: DeletePlayerPayload): Player!
+    removePlayer(data: DeletePlayerPayload): Boolean!
   }
 `;
