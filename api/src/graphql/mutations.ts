@@ -42,7 +42,7 @@ export const Mutation = {
     return { user: { username, id }, token: nanoid() };
   },
   createTeam: async (parent, { data }, { db }) => {
-    const { userId, name, tag, playerRole } = data;
+    const { userId, name, tag } = data;
     const id = nanoid();
     const tSql = "INSERT INTO teams(id,name,tag, teamOwner) VALUES(?,?,?,?)";
     const rSql =
