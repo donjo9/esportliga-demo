@@ -5,6 +5,10 @@ import Team from "../../componets/Team";
 import { useRouter } from "next/router";
 import styled from "styled-components";
 import tw from "twin.macro";
+import Player from "../../componets/Player";
+import { ActionButton } from "../../componets/Buttons";
+import React from "react";
+import RoleEdit, { TRoleEditFormData } from "../../componets/RoleEdit";
 
 const PlayersContainer = styled.div`
   ${tw`grid p-2 border border-gray-700 bg-gray-600 m-2`}
@@ -52,6 +56,21 @@ const deleteInvitaionQuery = gql`
   }
 `;
 
+const removePlayerRequest = gql`
+  mutation removePlayer($playerId: String!, $teamId: String!) {
+    removePlayer(data: { playerId: $playerId, teamId: $teamId })
+  }
+`;
+
+const editPlayerRequest = gql`
+  mutation editPlayer($role: String!, $playerId: String!) {
+    editPlayer(data: { role: $role, playerId: $playerId }) {
+      username
+      role
+    }
+  }
+`;
+
 const doGetPlayers = async (query) => {
   return await request(process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT, query);
 };
@@ -80,18 +99,38 @@ const TeamPage: React.FC = () => {
     mutate(playerQuery);
     mutate([teamQuery, teamid]);
   };
+  const removePlayer = async (
+    playerName: string,
+    playerId: string,
+    teamId: string
+  ) => {
+    const answer = window.confirm(`Remove ${playerName} from team?`);
+    if (answer) {
+      const removePlayerRespons = await request(
+        process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT,
+        removePlayerRequest,
+        { playerId, teamId }
+      );
+      if (removePlayerRespons) {
+        toast.success("Player removed successfully");
+        mutate(playerQuery);
+        mutate([teamQuery, teamId]);
+      }
+    }
+  };
   const deleteTeamInvitation = async (invitationid: string) => {
     const invitationRespons = await request(
       process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT,
       deleteInvitaionQuery,
       { invitationid }
     );
-    toast.success("Invitation deleted");
+    if (invitationRespons) {
+      toast.success("Invitation deleted");
 
-    mutate(playerQuery);
-    mutate([teamQuery, teamid]);
+      mutate(playerQuery);
+      mutate([teamQuery, teamid]);
+    }
   };
-  console.log(teamData);
 
   if (!teamData) {
     return <div>Loading...</div>;
@@ -101,6 +140,21 @@ const TeamPage: React.FC = () => {
     console.error(error);
   }
 
+  const onRoleEditSubmit = async (formData: TRoleEditFormData) => {
+    const { role, playerId } = formData;
+    console.log(formData);
+
+    const roleEdited = await request(
+      process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT,
+      editPlayerRequest,
+      { role, playerId }
+    );
+    toast.success(
+      `${roleEdited.editPlayer.username} now has the role ${roleEdited.editPlayer.role}`
+    );
+
+    console.log(roleEdited);
+  };
   const { team } = teamData;
   const { playerInvitations } = team;
 
@@ -112,7 +166,26 @@ const TeamPage: React.FC = () => {
   return (
     <div>
       {team ? (
-        <Team name={team.name} players={team.players} />
+        <Team name={team.name}>
+          {team.players?.map((player) => (
+            <React.Fragment key={player.id}>
+              <Player {...player}>
+                <RoleEdit
+                  role={player.role}
+                  playerId={player.id}
+                  onSubmit={onRoleEditSubmit}
+                />
+                <ActionButton
+                  onClick={() =>
+                    removePlayer(player.username, player.id, team.id)
+                  }
+                >
+                  Remove player
+                </ActionButton>
+              </Player>
+            </React.Fragment>
+          ))}
+        </Team>
       ) : (
         "You don't have a team yet"
       )}
