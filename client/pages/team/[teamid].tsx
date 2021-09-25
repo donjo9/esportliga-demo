@@ -92,15 +92,19 @@ const TeamPage: React.FC = () => {
   const { data: playersData } = useSWR(playerQuery, doGetPlayers);
 
   const sendTeamInvitation = async (userId: string, teamId: string) => {
-    const invitationRespons = await request(
-      process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT,
-      sendInvitationQuery,
-      { userId, teamId }
-    );
-    toast.success("Invitation send");
+    try {
+      const invitationRespons = await request(
+        process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT,
+        sendInvitationQuery,
+        { userId, teamId }
+      );
+      toast.success("Invitation send");
 
-    mutate(playerQuery);
-    mutate([teamQuery, teamId]);
+      mutate(playerQuery);
+      mutate([teamQuery, teamId]);
+    } catch (error) {
+      error?.response?.errors.forEach((error) => toast.error(error.message));
+    }
   };
   const removePlayer = async (
     playerName: string,
@@ -109,29 +113,53 @@ const TeamPage: React.FC = () => {
   ) => {
     const answer = window.confirm(`Remove ${playerName} from team?`);
     if (answer) {
-      const removePlayerRespons = await request(
-        process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT,
-        removePlayerRequest,
-        { playerId, teamId }
-      );
-      if (removePlayerRespons) {
-        toast.success("Player removed successfully");
-        mutate(playerQuery);
-        mutate([teamQuery, teamId]);
+      try {
+        const removePlayerRespons = await request(
+          process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT,
+          removePlayerRequest,
+          { playerId, teamId }
+        );
+        if (removePlayerRespons) {
+          toast.success("Player removed successfully");
+          mutate(playerQuery);
+          mutate([teamQuery, teamId]);
+        } else {
+          toast.error("Player removed failed, try again");
+        }
+      } catch ({ response: { errors } }) {
+        if (errors) {
+          errors.forEach((err) => {
+            toast.error(err.message);
+          });
+        } else {
+          toast.error("Player removed failed, try again");
+        }
       }
     }
   };
   const deleteTeamInvitation = async (invitationId: string) => {
-    const invitationRespons = await request(
-      process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT,
-      deleteInvitaionQuery,
-      { invitationId }
-    );
-    if (invitationRespons) {
-      toast.success("Invitation deleted");
+    try {
+      const invitationRespons = await request(
+        process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT,
+        deleteInvitaionQuery,
+        { invitationId }
+      );
+      if (invitationRespons) {
+        toast.success("Invitation deleted");
 
-      mutate(playerQuery);
-      mutate([teamQuery, teamid]);
+        mutate(playerQuery);
+        mutate([teamQuery, teamid]);
+      } else {
+        toast.error("Invitation deletion failed, try again");
+      }
+    } catch ({ response: { errors } }) {
+      if (errors) {
+        errors.forEach((err) => {
+          toast.error(err.message);
+        });
+      } else {
+        toast.error("Invitation deletion failed, try again");
+      }
     }
   };
 
@@ -146,14 +174,24 @@ const TeamPage: React.FC = () => {
   const onRoleEditSubmit = async (formData: TRoleEditFormData) => {
     const { role, playerId } = formData;
 
-    const roleEdited = await request(
-      process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT,
-      editPlayerRequest,
-      { role, playerId }
-    );
-    toast.success(
-      `${roleEdited.editPlayer.username} now has the role ${roleEdited.editPlayer.role}`
-    );
+    try {
+      const roleEdited = await request(
+        process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT,
+        editPlayerRequest,
+        { role, playerId }
+      );
+      toast.success(
+        `${roleEdited.editPlayer.username} now has the role ${roleEdited.editPlayer.role}`
+      );
+    } catch ({ response: { errors } }) {
+      if (errors) {
+        errors.forEach((err) => {
+          toast.error(err.message);
+        });
+      } else {
+        toast.error("Role edit failed, try again");
+      }
+    }
   };
   const { team } = teamData;
   const { playerInvitations } = team;

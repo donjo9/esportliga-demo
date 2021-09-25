@@ -43,37 +43,78 @@ const ProfilePage: React.FC = () => {
   } = useUser(authUser.id);
 
   const deleteTeamInvitation = async (invitationId: string) => {
-    const invitationRespons = await request(
-      process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT,
-      deleteInvitaionQuery,
-      { invitationId }
-    );
-    toast.success("Invitation deleted");
+    try {
+      const invitationRespons = await request(
+        process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT,
+        deleteInvitaionQuery,
+        { invitationId }
+      );
+      if (invitationRespons) {
+        toast.success("Invitation deleted");
 
-    revalidate();
+        revalidate();
+      } else {
+        toast.error("Invitation deletion failed, try again");
+      }
+    } catch ({ response: { errors } }) {
+      if (errors) {
+        errors.forEach((err) => {
+          toast.error(err.message);
+        });
+      } else {
+        toast.error("Invitation deletion failed, try again");
+      }
+    }
   };
   const acceptTeamInvitation = async (invitationId: string) => {
-    const invitationRespons = await request(
-      process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT,
-      acceptInvitaionQuery,
-      { invitationId }
-    );
-    toast.success("Invitation acceptet");
-
-    mutate(null, true);
-    revalidate();
+    try {
+      const invitationRespons = await request(
+        process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT,
+        acceptInvitaionQuery,
+        { invitationId }
+      );
+      if (invitationRespons) {
+        toast.success("Invitation acceptet");
+        mutate(null, true);
+        revalidate();
+      } else {
+        toast.error("Invitation accept failed, try again");
+      }
+    } catch ({ response: { errors } }) {
+      if (errors) {
+        errors.forEach((err) => {
+          toast.error(err.message);
+        });
+      } else {
+        toast.error("Invitation accept failed, try again");
+      }
+    }
   };
 
   const leaveTeam = async (playerId: string, teamId: string) => {
-    const invitationRespons = await request(
-      process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT,
-      leaveTeamQuery,
-      { playerId, teamId }
-    );
-    toast.success("Left team successfully");
+    try {
+      const leaveTeamRespons = await request(
+        process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT,
+        leaveTeamQuery,
+        { playerId, teamId }
+      );
+      if (leaveTeamRespons) {
+        toast.success("Left team successfully");
 
-    mutate(null, true);
-    revalidate();
+        mutate(null, true);
+        revalidate();
+      } else {
+        toast.error("Left team unsucessfull, try again");
+      }
+    } catch ({ response: { errors } }) {
+      if (errors) {
+        errors.forEach((err) => {
+          toast.error(err.message);
+        });
+      } else {
+        toast.error("Left team unsucessfull, try again");
+      }
+    }
   };
 
   return (
