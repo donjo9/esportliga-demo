@@ -55,8 +55,6 @@ const SignUpPage: React.FC = () => {
   } = useForm<SignupInputType>();
 
   const onSubmit: SubmitHandler<SignupInputType> = async (data) => {
-    console.log(data);
-
     const { username, password, email } = data;
 
     try {

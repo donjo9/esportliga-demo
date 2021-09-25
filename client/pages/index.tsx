@@ -33,7 +33,6 @@ const Home: React.FC = () => {
   if (!teamData) {
     return <div>"Loading..."</div>;
   }
-  console.log(teamData);
 
   return (
     <Container>

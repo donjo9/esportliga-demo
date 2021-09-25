@@ -38,8 +38,6 @@ type TRoleEditProps = TRoleEditFormData & {
 };
 
 const RoleEdit: React.FC<TRoleEditProps> = ({ role, playerId, onSubmit }) => {
-  console.log(role, playerId);
-
   const {
     register,
     handleSubmit,

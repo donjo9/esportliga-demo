@@ -145,7 +145,6 @@ const TeamPage: React.FC = () => {
 
   const onRoleEditSubmit = async (formData: TRoleEditFormData) => {
     const { role, playerId } = formData;
-    console.log(formData);
 
     const roleEdited = await request(
       process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT,
@@ -155,8 +154,6 @@ const TeamPage: React.FC = () => {
     toast.success(
       `${roleEdited.editPlayer.username} now has the role ${roleEdited.editPlayer.role}`
     );
-
-    console.log(roleEdited);
   };
   const { team } = teamData;
   const { playerInvitations } = team;

@@ -54,8 +54,6 @@ export const Mutation = {
   createTeamInvitation: async (parent, { data }, { db }) => {
     try {
       const { playerId, teamId } = data;
-      console.log(playerId, teamId);
-
       const sql =
         "INSERT INTO team_invitations(id, playerid, teamid) VALUES(?,?,?)";
       const values = [nanoid(), playerId, teamId];
