@@ -42,23 +42,23 @@ export const Mutation = {
     return { user: { username, id }, token: nanoid() };
   },
   createTeam: async (parent, { data }, { db }) => {
-    const { userid, name, tag, playerRole } = data;
+    const { userId, name, tag, playerRole } = data;
     const id = nanoid();
     const tSql = "INSERT INTO teams(id,name,tag, teamOwner) VALUES(?,?,?,?)";
     const rSql =
       "INSERT INTO player_team_realation(playerId,teamId,playerRole) VALUES(?,?,?)";
-    await db.run(tSql, [id, name, tag, userid]);
-    await db.run(rSql, [userid, id, "PLAYER"]);
+    await db.run(tSql, [id, name, tag, userId]);
+    await db.run(rSql, [userId, id, "PLAYER"]);
     return { id, name, tag };
   },
   createTeamInvitation: async (parent, { data }, { db }) => {
     try {
-      const { playerid, teamid } = data;
-      console.log(playerid, teamid);
+      const { playerId, teamId } = data;
+      console.log(playerId, teamId);
 
       const sql =
         "INSERT INTO team_invitations(id, playerid, teamid) VALUES(?,?,?)";
-      const values = [nanoid(), playerid, teamid];
+      const values = [nanoid(), playerId, teamId];
       await db.run(sql, values);
       return true;
     } catch (error) {
@@ -67,9 +67,9 @@ export const Mutation = {
     }
   },
   acceptTeamInvitation: async (parent, { data }, { db }) => {
-    const { invitationid } = data;
+    const { invitationId } = data;
     const iSql = "SELECT playerId, teamId from team_invitations WHERE id = (?)";
-    const invite = await db.get(iSql, [invitationid]);
+    const invite = await db.get(iSql, [invitationId]);
     if (invite) {
       const rSql =
         "INSERT INTO player_team_realation(playerId,teamId, playerRole) VALUES(?,?, 'PLAYER')";
@@ -77,19 +77,19 @@ export const Mutation = {
       const sSql = "SELECT id, name, tag FROM teams WHERE id=(?)";
       const team = await db.get(sSql, [invite.teamId]);
       const dSql = "DELETE FROM team_invitations WHERE id = (?)";
-      await db.run(dSql, invitationid);
+      await db.run(dSql, invitationId);
       return team;
     } else {
       throw new Error("No invitation with that id");
     }
   },
   deleteTeamInvitation: async (parent, { data }, { db }) => {
-    const { invitationid } = data;
+    const { invitationId } = data;
     const iSql = "SELECT playerId, teamId from team_invitations WHERE id = (?)";
-    const invite = await db.get(iSql, [invitationid]);
+    const invite = await db.get(iSql, [invitationId]);
     if (invite) {
       const dSql = "DELETE FROM team_invitations WHERE id = (?)";
-      await db.run(dSql, invitationid);
+      await db.run(dSql, invitationId);
       return true;
     } else {
       throw new Error("No invitation with that id");

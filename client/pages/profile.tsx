@@ -55,8 +55,8 @@ const doGetProfile = async (query, id) => {
 };
 
 const acceptInvitaionQuery = gql`
-  mutation acceptInvitation($invitationid: String) {
-    acceptTeamInvitation(data: { invitationid: $invitationid }) {
+  mutation acceptInvitation($invitationId: String) {
+    acceptTeamInvitation(data: { invitationId: $invitationId }) {
       id
       name
       players {
@@ -69,13 +69,13 @@ const acceptInvitaionQuery = gql`
 `;
 
 const leaveTeamQuery = gql`
-  mutation leaveTeam($playerid: String, $teamid: String) {
-    removePlayer(data: { playerId: $playerid, teamId: $teamid })
+  mutation leaveTeam($playerId: String, $teamId: String) {
+    removePlayer(data: { playerId: $playerId, teamId: $teamId })
   }
 `;
 const deleteInvitaionQuery = gql`
-  mutation deleteInvitation($invitationid: String) {
-    deleteTeamInvitation(data: { invitationid: $invitationid })
+  mutation deleteInvitation($invitationId: String) {
+    deleteTeamInvitation(data: { invitationId: $invitationId })
   }
 `;
 
@@ -91,21 +91,21 @@ const ProfilePage: React.FC = () => {
     return <div>"Loading..."</div>;
   }
 
-  const deleteTeamInvitation = async (invitationid: string) => {
+  const deleteTeamInvitation = async (invitationId: string) => {
     const invitationRespons = await request(
       process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT,
       deleteInvitaionQuery,
-      { invitationid }
+      { invitationId }
     );
     toast.success("Invitation deleted");
 
     mutate([userQuery, user.id]);
   };
-  const acceptTeamInvitation = async (invitationid: string) => {
+  const acceptTeamInvitation = async (invitationId: string) => {
     const invitationRespons = await request(
       process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT,
       acceptInvitaionQuery,
-      { invitationid }
+      { invitationId }
     );
     toast.success("Invitation acceptet");
 
@@ -113,11 +113,11 @@ const ProfilePage: React.FC = () => {
     teamMutate(null, true);
   };
 
-  const leaveTeam = async (playerid: string, teamid: string) => {
+  const leaveTeam = async (playerId: string, teamId: string) => {
     const invitationRespons = await request(
       process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT,
       leaveTeamQuery,
-      { playerid, teamid }
+      { playerId, teamId }
     );
     toast.success("Invitation acceptet");
 

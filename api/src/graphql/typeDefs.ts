@@ -67,15 +67,15 @@ export const typeDefs = gql`
     tag: String
   }
   input CreateTeamInvitationPayload {
-    playerid: String
-    teamid: String
+    playerId: String
+    teamId: String
   }
   input AcceptTeamInvitationPayload {
-    invitationid: String
+    invitationId: String
   }
 
   input DeleteTeamInvitationPayload {
-    invitationid: String
+    invitationId: String
   }
 
   input EditPlayerPayload {

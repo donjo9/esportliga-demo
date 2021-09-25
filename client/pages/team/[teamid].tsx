@@ -45,14 +45,14 @@ const teamQuery = gql`
 `;
 
 const sendInvitationQuery = gql`
-  mutation sendInvitation($userid: String!, $teamid: String) {
-    createTeamInvitation(data: { playerid: $userid, teamid: $teamid })
+  mutation sendInvitation($userId: String!, $teamId: String) {
+    createTeamInvitation(data: { playerId: $userId, teamId: $teamId })
   }
 `;
 
 const deleteInvitaionQuery = gql`
-  mutation deleteInvitation($invitationid: String) {
-    deleteTeamInvitation(data: { invitationid: $invitationid })
+  mutation deleteInvitation($invitationId: String) {
+    deleteTeamInvitation(data: { invitationId: $invitationId })
   }
 `;
 
@@ -88,16 +88,16 @@ const TeamPage: React.FC = () => {
   );
   const { data: playersData } = useSWR(playerQuery, doGetPlayers);
 
-  const sendTeamInvitation = async (userid: string, teamid: string) => {
+  const sendTeamInvitation = async (userId: string, teamId: string) => {
     const invitationRespons = await request(
       process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT,
       sendInvitationQuery,
-      { userid, teamid }
+      { userId, teamId }
     );
     toast.success("Invitation send");
 
     mutate(playerQuery);
-    mutate([teamQuery, teamid]);
+    mutate([teamQuery, teamId]);
   };
   const removePlayer = async (
     playerName: string,
@@ -118,11 +118,11 @@ const TeamPage: React.FC = () => {
       }
     }
   };
-  const deleteTeamInvitation = async (invitationid: string) => {
+  const deleteTeamInvitation = async (invitationId: string) => {
     const invitationRespons = await request(
       process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT,
       deleteInvitaionQuery,
-      { invitationid }
+      { invitationId }
     );
     if (invitationRespons) {
       toast.success("Invitation deleted");
