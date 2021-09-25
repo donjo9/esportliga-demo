@@ -1,14 +1,9 @@
 import request, { gql } from "graphql-request";
 import toast from "react-hot-toast";
-import styled from "styled-components";
 import useSWR, { useSWRConfig } from "swr";
-import tw from "twin.macro";
+import { ActionButton } from "../componets/Buttons";
 import { useAuth } from "../utils/useAuth";
 import useTeam from "../utils/useTeam";
-
-const LeaveButton = styled.button`
-  ${tw`mx-2 px-2 border-2 rounded-xl border-gray-700 bg-green-800 hover:bg-green-600`}
-`;
 
 type TTeam = {
   id: string;
@@ -137,11 +132,11 @@ const ProfilePage: React.FC = () => {
       <div>
         {data.player.team?.name}
         {data.player.team ? (
-          <LeaveButton
+          <ActionButton
             onClick={() => leaveTeam(data.player.id, data.player.team.id)}
           >
             Leave team
-          </LeaveButton>
+          </ActionButton>
         ) : null}
       </div>
       <div>
