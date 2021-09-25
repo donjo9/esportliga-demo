@@ -119,7 +119,7 @@ const ProfilePage: React.FC = () => {
       leaveTeamQuery,
       { playerId, teamId }
     );
-    toast.success("Invitation acceptet");
+    toast.success("Left team successfully");
 
     mutate([userQuery, user.id]);
     teamMutate(null, true);
