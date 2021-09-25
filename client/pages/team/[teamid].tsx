@@ -9,6 +9,8 @@ import Player from "../../componets/Player";
 import { ActionButton } from "../../componets/Buttons";
 import React from "react";
 import RoleEdit, { TRoleEditFormData } from "../../componets/RoleEdit";
+import useUser from "../../utils/useUser";
+import { useAuth } from "../../utils/useAuth";
 
 const PlayersContainer = styled.div`
   ${tw`grid p-2 border border-gray-700 bg-gray-600 m-2`}
@@ -80,6 +82,7 @@ const doGetTeamInfo = async (query, id) => {
 
 const TeamPage: React.FC = () => {
   const router = useRouter();
+  const { user } = useAuth();
   const { teamid } = router.query;
   const { mutate } = useSWRConfig();
   const { data: teamData, error } = useSWR(
@@ -170,18 +173,22 @@ const TeamPage: React.FC = () => {
           {team.players?.map((player) => (
             <React.Fragment key={player.id}>
               <Player {...player}>
+                {user.id !== player.id ? (
+                  <ActionButton
+                    onClick={() =>
+                      removePlayer(player.username, player.id, team.id)
+                    }
+                  >
+                    Remove player
+                  </ActionButton>
+                ) : (
+                  <div></div>
+                )}
                 <RoleEdit
                   role={player.role}
                   playerId={player.id}
                   onSubmit={onRoleEditSubmit}
                 />
-                <ActionButton
-                  onClick={() =>
-                    removePlayer(player.username, player.id, team.id)
-                  }
-                >
-                  Remove player
-                </ActionButton>
               </Player>
             </React.Fragment>
           ))}
