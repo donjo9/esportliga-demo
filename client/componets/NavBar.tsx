@@ -4,7 +4,7 @@ import styled from "styled-components";
 import tw from "twin.macro";
 import { useAuth } from "../utils/useAuth";
 import { useRouter } from "next/router";
-import useTeam from "../utils/useTeam";
+import useUser from "../utils/useUser";
 import toast, { Toaster } from "react-hot-toast";
 
 const NavBarContainer = styled.nav`
@@ -23,8 +23,8 @@ const Logout = styled.button`
 `;
 
 const NavBar = () => {
-  const { user, setUserInfo } = useAuth();
-  const { data } = useTeam(user.id);
+  const { user: authUser, setUserInfo } = useAuth();
+  const { team } = useUser(authUser.id);
   const router = useRouter();
   const SignOutHandler = async () => {
     setUserInfo({ username: "", id: "" });
@@ -37,7 +37,7 @@ const NavBar = () => {
         <NavItem>Home</NavItem>
       </Link>
 
-      {!user.username ? (
+      {!authUser.username ? (
         <>
           <Link href="/login">
             <NavItem>Login</NavItem>
@@ -53,10 +53,10 @@ const NavBar = () => {
       )}
 
       <Link href={`/profile`}>
-        <NavItem>{user.username}</NavItem>
+        <NavItem>{authUser.username}</NavItem>
       </Link>
-      {data?.player?.team ? (
-        <Link href={`/team/${data.player.team.id}`}>
+      {team ? (
+        <Link href={`/team/${team.id}`}>
           <NavItem>Team</NavItem>
         </Link>
       ) : null}
