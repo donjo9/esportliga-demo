@@ -9,7 +9,6 @@ import Player from "../../componets/Player";
 import { ActionButton } from "../../componets/Buttons";
 import React from "react";
 import RoleEdit, { TRoleEditFormData } from "../../componets/RoleEdit";
-import useUser from "../../utils/useUser";
 import { useAuth } from "../../utils/useAuth";
 
 const PlayersContainer = styled.div`
