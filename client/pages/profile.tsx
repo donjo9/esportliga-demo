@@ -1,9 +1,24 @@
 import request, { gql } from "graphql-request";
+import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
-import useSWR, { useSWRConfig } from "swr";
-import { ActionButton } from "../componets/Buttons";
+import styled from "styled-components";
+import tw from "twin.macro";
+import { ActionButton, ButtonBase } from "../componets/Buttons";
 import { useAuth } from "../utils/useAuth";
 import useUser from "../utils/useUser";
+
+const CreateTeamForm = styled.form`
+  ${tw`flex w-max flex-col`}
+`;
+
+const CreateTeamInput = styled.input`
+  ${tw`bg-gray-600 text-gray-900 w-max border m-2 p-1 rounded-lg text-gray-100`}
+`;
+
+const CreateTeamButton = styled.input`
+  ${ButtonBase}
+  ${tw`cursor-pointer text-center m-2 p-1`}
+`;
 
 const acceptInvitaionQuery = gql`
   mutation acceptInvitation($invitationId: String) {
@@ -30,8 +45,21 @@ const deleteInvitaionQuery = gql`
   }
 `;
 
+const createTeamQuery = gql`
+  mutation createTeam($name: String, $tag: String, $userId: String) {
+    createTeam(data: { name: $name, tag: $tag, userId: $userId }) {
+      id
+    }
+  }
+`;
+
 const ProfilePage: React.FC = () => {
   const { user: authUser } = useAuth();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
 
   const {
     id: userId,
@@ -116,7 +144,35 @@ const ProfilePage: React.FC = () => {
       }
     }
   };
+  type CreateTeamFormData = {
+    name: string;
+    tag: string;
+    userId: string;
+  };
 
+  const onSubmit = async (formData: CreateTeamFormData) => {
+    try {
+      const { name, tag, userId } = formData;
+
+      const createTeamRespons = await request(
+        process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT,
+        createTeamQuery,
+        { name, tag, userId }
+      );
+      if (createTeamRespons) {
+        toast.success("Team created sucessfully");
+        revalidate();
+      }
+    } catch ({ response: { errors } }) {
+      if (errors) {
+        errors.forEach((err) => {
+          toast.error(err.message);
+        });
+      } else {
+        toast.error("Left team unsucessfull, try again");
+      }
+    }
+  };
   return (
     <div>
       {username}
@@ -144,6 +200,23 @@ const ProfilePage: React.FC = () => {
             ))
           : null}
       </div>
+      {!team && userId ? (
+        <CreateTeamForm onSubmit={handleSubmit(onSubmit)}>
+          <label>Create New Team:</label>
+          <CreateTeamInput
+            type="text"
+            {...register("name")}
+            placeholder="Team Name"
+          />
+          <CreateTeamInput
+            type="text"
+            {...register("tag")}
+            placeholder="Tag/Short Name"
+          />
+          <input type="hidden" defaultValue={userId} {...register("userId")} />
+          <CreateTeamButton type="submit" value="Save" />
+        </CreateTeamForm>
+      ) : null}
     </div>
   );
 };
