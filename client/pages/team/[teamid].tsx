@@ -29,6 +29,9 @@ const teamQuery = gql`
     team(id: $id) {
       id
       name
+      teamOwner {
+        id
+      }
       playerInvitations {
         id
         user {
@@ -207,7 +210,7 @@ const TeamPage: React.FC = () => {
           {team.players?.map((player) => (
             <React.Fragment key={player.id}>
               <Player {...player}>
-                {user.id !== player.id ? (
+                {user.id !== player.id && player.id !== team.teamOwner.id ? (
                   <ActionButton
                     onClick={() =>
                       removePlayer(player.username, player.id, team.id)
