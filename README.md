@@ -63,6 +63,8 @@ yarn install
 
 To run the client run,
 
+**CLIENT REQUIRES API TO BE RUNNING TO FUNCTION PROPERLY**
+
 ```bash
 npm run dev
 # or
