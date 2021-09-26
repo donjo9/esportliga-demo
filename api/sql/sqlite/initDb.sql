@@ -12,8 +12,7 @@ CREATE TABLE IF NOT EXISTS teams (
     name text UNIQUE NOT NULL,
     tag text UNIQUE NOT NULL,
     teamOwner text NOT NULL,
-    FOREIGN KEY (teamOwner) REFERENCES users (id)
-
+    FOREIGN KEY (teamOwner) REFERENCES users (id) ON DELETE CASCADE
 );
 
 DROP TABLE IF EXISTS player_team_realation;
@@ -22,8 +21,8 @@ CREATE TABLE IF NOT EXISTS player_team_realation (
     playerId text UNIQUE NOT NULL,
     teamId text NOT NULL,
     playerRole text NOT NULL,
-    FOREIGN KEY (playerId) REFERENCES users (id)
-    FOREIGN KEY (teamId) REFERENCES teams (id)
+    FOREIGN KEY (playerId) REFERENCES users (id) ON DELETE CASCADE
+    FOREIGN KEY (teamId) REFERENCES teams (id) ON DELETE CASCADE
 );
 
 DROP TABLE IF EXISTS team_invitations;
@@ -31,10 +30,9 @@ CREATE TABLE IF NOT EXISTS team_invitations (
     id text PRIMARY KEY,
     playerId text NULL,
     teamId text NOT NULL,
-    FOREIGN KEY (playerId) REFERENCES users (id)
-    FOREIGN KEY (teamId) REFERENCES teams (id)
-)
-
+    FOREIGN KEY (playerId) REFERENCES users (id) ON DELETE CASCADE
+    FOREIGN KEY (teamId) REFERENCES teams (id) ON DELETE CASCADE
+);
 SELECT * from player_team_realation;
 
 SELECT * from player_team_realation WHERE playerId = 'u2l4UStXbZh4nfjRpcG27' AND teamId = '25O2txdHyWFRQqPbkXJSU';
