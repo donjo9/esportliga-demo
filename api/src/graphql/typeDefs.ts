@@ -62,7 +62,7 @@ export const typeDefs = gql`
   }
 
   input CreateTeamPayload {
-    userid: String
+    userId: String
     name: String
     tag: String
   }
