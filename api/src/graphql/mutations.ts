@@ -51,6 +51,18 @@ export const Mutation = {
     await db.run(rSql, [userId, id, "PLAYER"]);
     return { id, name, tag };
   },
+  deleteTeam: async (parent, { data }, { db }) => {
+    const { teamId, ownerId } = data;
+
+    const dtSql = "DELETE FROM teams WHERE id = (?) AND teamOwner = (?);";
+    try {
+      await db.run(dtSql, [teamId, ownerId]);
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
+    return true;
+  },
   createTeamInvitation: async (parent, { data }, { db }) => {
     try {
       const { playerId, teamId } = data;

@@ -67,6 +67,11 @@ export const typeDefs = gql`
     name: String
     tag: String
   }
+
+  input DeleteTeamPayload {
+    teamId: String!
+    ownerId: String!
+  }
   input CreateTeamInvitationPayload {
     playerId: String
     teamId: String
@@ -105,6 +110,7 @@ export const typeDefs = gql`
     signin(data: SignInPayload): AuthRespons!
     signup(data: SignUpPayLoad): AuthRespons!
     createTeam(data: CreateTeamPayload): Team!
+    deleteTeam(data: DeleteTeamPayload): Boolean!
     createTeamInvitation(data: CreateTeamInvitationPayload): Boolean!
     acceptTeamInvitation(data: AcceptTeamInvitationPayload): Team!
     deleteTeamInvitation(data: DeleteTeamInvitationPayload): Boolean!

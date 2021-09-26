@@ -4,6 +4,10 @@ import useSWR, { useSWRConfig } from "swr";
 type TTeam = {
   id: string;
   name: string;
+  tag: string;
+  teamOwner: {
+    id: string;
+  };
 };
 
 type TTeamInvitations = {
@@ -37,6 +41,9 @@ const userQuery = gql`
       team {
         id
         name
+        teamOwner {
+          id
+        }
         players {
           id
           username

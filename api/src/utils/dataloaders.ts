@@ -89,8 +89,6 @@ export const getBatchTeamPlayers = async (
 export const getBatchTeamOwner = async (
   teamIds: readonly string[]
 ): Promise<Array<TPlayer>> => {
-  console.log("HELLO WORLD");
-
   const db = await database();
   const placeholder = teamIds.map(() => "?").join(",");
   const sql = `SELECT users.id as uid, users.username as username, users.email as email, team.id as tid FROM users
@@ -108,8 +106,6 @@ export const getBatchTeamOwner = async (
       };
     });
   }
-  console.log(rows, mappedInput);
-
   const teamArray = teamIds.map((key) => mappedInput[key]);
   return teamArray;
 };

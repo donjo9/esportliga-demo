@@ -52,7 +52,11 @@ const createTeamQuery = gql`
     }
   }
 `;
-
+const deleteTeamQuery = gql`
+  mutation deleteTeam($teamId: String!, $ownerId: String!) {
+    deleteTeam(data: { teamId: $teamId, ownerId: $ownerId })
+  }
+`;
 const ProfilePage: React.FC = () => {
   const { user: authUser } = useAuth();
   const {
@@ -144,6 +148,29 @@ const ProfilePage: React.FC = () => {
       }
     }
   };
+
+  const deleteTeam = async (teamId: string, ownerId: string) => {
+    try {
+      const deleteTeamRespons = await request(
+        process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT,
+        deleteTeamQuery,
+        { teamId, ownerId }
+      );
+      if (deleteTeamRespons) {
+        toast.success("Team deleted sucessfully");
+        revalidate();
+      }
+    } catch ({ response: { errors } }) {
+      if (errors) {
+        errors.forEach((err) => {
+          toast.error(err.message);
+        });
+      } else {
+        toast.error("Left team unsucessfull, try again");
+      }
+    }
+  };
+
   type CreateTeamFormData = {
     name: string;
     tag: string;
@@ -179,9 +206,15 @@ const ProfilePage: React.FC = () => {
       <div>
         {team?.name}
         {team ? (
-          <ActionButton onClick={() => leaveTeam(userId, team.id)}>
-            Leave team
-          </ActionButton>
+          userId != team.teamOwner.id ? (
+            <ActionButton onClick={() => leaveTeam(userId, team.id)}>
+              Leave team
+            </ActionButton>
+          ) : (
+            <ActionButton onClick={() => deleteTeam(team.id, userId)}>
+              Delete team
+            </ActionButton>
+          )
         ) : null}
       </div>
       <div>
