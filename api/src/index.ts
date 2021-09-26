@@ -12,6 +12,7 @@ import {
   getBatchPlayerTeams,
   getBatchTeamPlayers,
   getBatchTeamPlayerInvitation,
+  getBatchTeamOwner,
 } from "./utils/dataloaders";
 
 const resolvers = {
@@ -40,6 +41,7 @@ const server = new ApolloServer({
 
     const invitationTeamLoader = new DataLoader(getBatchInvitationTeams);
     const invitationUserLoader = new DataLoader(getBatchInvitationUsers);
+    const teamOwnerLoader = new DataLoader(getBatchTeamOwner);
     return {
       db,
       teamPlayerLoader,
@@ -48,6 +50,7 @@ const server = new ApolloServer({
       invitationTeamLoader,
       invitationUserLoader,
       teamPlayerInvitationsLoader,
+      teamOwnerLoader,
     };
   },
 });

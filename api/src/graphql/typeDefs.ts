@@ -36,6 +36,7 @@ export const typeDefs = gql`
     id: ID!
     name: String!
     tag: String!
+    teamOwner: User!
     players: [Player]!
     playerInvitations: [TeamInvitation]!
   }

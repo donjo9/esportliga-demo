@@ -38,6 +38,11 @@ const invitationUser = async (parent, data, { invitationUserLoader }) => {
   return invitations;
 };
 
+const teamOwner = async (parent, data, { teamOwnerLoader }) => {
+  const invitations = await teamOwnerLoader.load(parent.id);
+  return invitations;
+};
+
 export const User = {
   team,
   teamInvitations,
@@ -50,6 +55,7 @@ export const Player = {
 export const Team = {
   players,
   playerInvitations,
+  teamOwner,
 };
 
 export const TeamInvitation = {
